@@ -1,0 +1,25 @@
+{
+  "users": [12, 27, 34, 41, 58, 73, 89, 104],
+  "movies": [
+    { "movieId": 1, "title": "Toy Story" },
+    { "movieId": 47, "title": "Seven" },
+    { "movieId": 260, "title": "Star Wars IV" },
+    { "movieId": 296, "title": "Pulp Fiction" },
+    { "movieId": 318, "title": "Shawshank" },
+    { "movieId": 356, "title": "Forrest Gump" },
+    { "movieId": 480, "title": "Jurassic Park" },
+    { "movieId": 593, "title": "Silence Lambs" },
+    { "movieId": 2571, "title": "The Matrix" },
+    { "movieId": 4993, "title": "LOTR Fellowship" }
+  ],
+  "cells": [
+    { "userId": 12, "movieId": 1, "rating": 4.5 }, { "userId": 12, "movieId": 356, "rating": 3.5 }, { "userId": 12, "movieId": 480, "rating": 3.5 },
+    { "userId": 27, "movieId": 260, "rating": 5.0 }, { "userId": 27, "movieId": 480, "rating": 4.0 }, { "userId": 27, "movieId": 2571, "rating": 4.5 },
+    { "userId": 34, "movieId": 296, "rating": 5.0 }, { "userId": 34, "movieId": 593, "rating": 4.0 },
+    { "userId": 41, "movieId": 318, "rating": 5.0 }, { "userId": 41, "movieId": 356, "rating": 4.5 },
+    { "userId": 58, "movieId": 47, "rating": 4.5 }, { "userId": 58, "movieId": 593, "rating": 5.0 }, { "userId": 58, "movieId": 2571, "rating": 4.0 },
+    { "userId": 73, "movieId": 260, "rating": 4.0 }, { "userId": 73, "movieId": 4993, "rating": 5.0 },
+    { "userId": 89, "movieId": 1, "rating": 3.0 }, { "userId": 89, "movieId": 318, "rating": 4.5 }, { "userId": 89, "movieId": 356, "rating": 4.0 },
+    { "userId": 104, "movieId": 47, "rating": 3.5 }, { "userId": 104, "movieId": 260, "rating": 4.0 }, { "userId": 104, "movieId": 480, "rating": 4.5 }, { "userId": 104, "movieId": 2571, "rating": 5.0 }
+  ]
+}

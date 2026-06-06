@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+*.tsbuildinfo
+.env
+.env.*
+vite.config.js
+vite.config.d.ts
+data/raw/**
+!data/raw/.gitkeep
+public/data/generated/**
+!public/data/generated/.gitkeep
+__pycache__/
+.pytest_cache/

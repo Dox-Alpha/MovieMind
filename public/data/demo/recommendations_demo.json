@@ -1,0 +1,36 @@
+[
+  {
+    "userId": 27,
+    "profile": "Sci-fi adventure viewer with strong Star Wars and Matrix signals.",
+    "ratedMovies": [
+      { "movieId": 260, "rating": 5.0 },
+      { "movieId": 1196, "rating": 5.0 },
+      { "movieId": 2571, "rating": 4.5 },
+      { "movieId": 589, "rating": 4.0 }
+    ],
+    "recommendations": [
+      { "movieId": 1210, "score": 4.71, "algorithm": "item", "reason": "It shares a strong rating pattern with the Star Wars titles already rated highly." },
+      { "movieId": 1198, "score": 4.45, "algorithm": "item", "reason": "Adventure-heavy viewers similar to this profile also liked Raiders of the Lost Ark." },
+      { "movieId": 58559, "score": 4.18, "algorithm": "svd", "reason": "The latent action/crime factor is close to The Matrix and Terminator 2." }
+    ],
+    "successCase": "Return of the Jedi is likely successful because it continues the same franchise and genre cluster.",
+    "possibleError": "The Dark Knight may be too crime-drama oriented if the user mainly wants space adventure."
+  },
+  {
+    "userId": 41,
+    "profile": "Drama-oriented viewer who rewards emotional, highly rated classics.",
+    "ratedMovies": [
+      { "movieId": 318, "rating": 5.0 },
+      { "movieId": 527, "rating": 5.0 },
+      { "movieId": 356, "rating": 4.5 },
+      { "movieId": 858, "rating": 4.5 }
+    ],
+    "recommendations": [
+      { "movieId": 2858, "score": 4.36, "algorithm": "svd", "reason": "Its latent drama factor aligns with Shawshank and Schindler's List." },
+      { "movieId": 7361, "score": 4.21, "algorithm": "item", "reason": "Users who like thoughtful drama and romance clusters rate it highly." },
+      { "movieId": 296, "score": 4.08, "algorithm": "user", "reason": "Similar users with crime-drama taste often also liked Pulp Fiction." }
+    ],
+    "successCase": "American Beauty fits the serious-drama cluster and is easy to explain from the user's ratings.",
+    "possibleError": "Pulp Fiction may be a mismatch if the user dislikes nonlinear or violent crime stories."
+  }
+]
