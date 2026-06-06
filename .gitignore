@@ -13,3 +13,5 @@ public/data/generated/**
 !public/data/generated/.gitkeep
 __pycache__/
 .pytest_cache/
+
+assist/
