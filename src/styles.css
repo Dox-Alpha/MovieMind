@@ -41,6 +41,8 @@ select {
 
   .section-title {
     @apply max-w-4xl text-3xl font-semibold tracking-tight text-white sm:text-4xl;
+    text-wrap: balance;
+    line-height: 1.12;
   }
 }
 

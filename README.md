@@ -1,42 +1,26 @@
-# MovieMind
+# 🎬 MovieMind
 
-MovieMind is an interactive React single-page demo for a MovieLens mini recommender system. It is designed as both a runnable recommendation playground and a scroll narrative for a course project on recommendation systems.
+MovieMind is an interactive React + Vite single-page app that explains how a MovieLens-style recommender system turns rating behavior into personalized movie recommendations.
 
-The app lets users search movies, rate favorites, switch recommendation algorithms, generate Top-10 results, and inspect why those results appear. The page then walks through the full pipeline: behavior data, rating matrix, similarity, recommendation generation, explanation, case studies, and risks.
+[Live Demo](https://dox-alpha.github.io/MovieMind/) · [Algorithm Notes](docs/algorithms.md) · [Risks & Limitations](docs/risks.md)
 
-## Features
+![MovieMind hero screenshot](docs/assets/hero.png)
 
-- Interactive movie search and 1-5 rating controls
-- Four recommendation modes:
-  - Popularity Baseline
-  - User-based Collaborative Filtering
-  - Item-based Collaborative Filtering
-  - Matrix Factorization / SVD-style latent vectors
-- Top-10 recommendation cards with score, genres, algorithm badge, and reason
-- Scroll-based recommender pipeline narrative
-- MovieLens data source section with rating and genre charts
-- User-item rating matrix heatmap
-- User and item similarity analysis
-- Case studies with successful and possibly wrong recommendations
-- Limitations and risks section covering sparsity, cold start, filter bubbles, privacy, popularity bias, and diversity
+## ✨ Features
 
-## Project Structure
+- Interactive recommendation playground with movie search, liked movies, 1-5 ratings, and Top-10 results.
+- Four recommendation modes: Popularity, User-based CF, Item-based CF, and SVD-style latent factors.
+- Human-readable recommendation reasons with scores and algorithm badges.
+- Scroll narrative covering behavior data, rating matrices, similarity, recommendations, explanations, case studies, and risks.
+- MovieLens data source dashboard with rating and genre distributions.
+- User-item rating matrix heatmap and similarity analysis.
+- GitHub Pages friendly demo mode using committed compact JSON.
 
-```text
-MovieMind/
-  public/data/demo/          # Committed compact demo JSON for instant playback
-  public/data/generated/     # Output target for regenerated MovieLens JSON
-  data/raw/                  # Local-only raw MovieLens CSV files, ignored by Git
-  scripts/prepare_movielens.py
-  src/
-    components/              # Hero graph, playground, narrative sections
-    lib/                     # Data loading and recommender algorithms
-    App.tsx
-    main.tsx
-    styles.css
-```
+## 🎯 Why It Matters
 
-## Run the React App
+This project is designed as both a course deliverable and a portfolio project. The app does not only show recommendations; it also explains how recommendation signals are collected, transformed, compared, ranked, explained, and audited for product risk.
+
+## 🚀 Quick Start
 
 Install dependencies:
 
@@ -56,42 +40,51 @@ Build for production:
 npm run build
 ```
 
-## GitHub Pages
+Preview the production build:
 
-This project can be hosted on GitHub Pages because it builds to static files. The online Pages version uses the committed compact demo JSON in `public/data/demo/`. Raw MovieLens CSV files and locally generated full-data JSON outputs are intentionally ignored and should not be pushed.
-
-After pushing to GitHub, enable Pages in the repository settings:
-
-```text
-Settings -> Pages -> Build and deployment -> Source: GitHub Actions
+```bash
+npm run preview
 ```
 
-The included workflow at `.github/workflows/deploy.yml` builds the Vite app and deploys the `dist/` folder whenever `main` is pushed.
+## 🗂️ Project Structure
 
-## MovieLens Data
+```text
+MovieMind/
+  docs/
+    algorithms.md            # Algorithm explanation with diagrams
+    risks.md                 # Recommendation risk notes
+    assets/hero.png          # README screenshot
+  public/data/demo/          # Committed compact demo JSON for instant playback
+  public/data/generated/     # Local generated JSON output, ignored by Git
+  data/raw/                  # Local-only raw MovieLens CSV files, ignored by Git
+  scripts/prepare_movielens.py
+  src/
+    components/              # Hero graph, playground, narrative sections
+    lib/                     # Data loading and recommender algorithms
+    App.tsx
+    main.tsx
+    styles.css
+```
 
-This repository includes a small demo JSON dataset so the app works immediately. It does not commit raw MovieLens CSV files. GroupLens notes that public redistribution of MovieLens datasets is generally not permitted, so raw data should be downloaded directly by each user.
+## 📊 Data Strategy
 
-Download MovieLens small from the official page:
+This repository includes compact demo JSON so the app works immediately on GitHub Pages. It does not commit raw MovieLens CSV files or locally generated full-data JSON.
+
+Raw MovieLens files should be downloaded directly from GroupLens:
 
 [https://grouplens.org/datasets/movielens/](https://grouplens.org/datasets/movielens/)
 
-Unzip it so the files are located at:
+Expected local raw files:
 
 ```text
 data/raw/ml-latest-small/movies.csv
 data/raw/ml-latest-small/ratings.csv
 ```
 
-Install Python dependencies:
+Generate local frontend JSON:
 
 ```bash
 pip install pandas numpy scikit-learn
-```
-
-Generate frontend JSON:
-
-```bash
 python scripts/prepare_movielens.py
 ```
 
@@ -106,39 +99,59 @@ public/data/generated/user_similarity.json
 public/data/generated/recommendations_demo.json
 ```
 
-The app first tries to load `public/data/generated/`. If generated files are not available, it automatically falls back to the committed `public/data/demo/` files. This keeps the project reproducible locally while still working immediately on GitHub or static hosting.
+At runtime, the app first tries `public/data/generated/` and falls back to `public/data/demo/`.
 
-## Algorithm Notes
+## 🧠 Algorithms
 
-### Popularity Baseline
+MovieMind implements four recommender strategies:
 
-Ranks movies using average rating and rating count. It is stable and useful when the user has too few ratings, but it is not personalized and can amplify popularity bias.
+- Popularity baseline
+- User-based collaborative filtering
+- Item-based collaborative filtering
+- SVD-style latent factor scoring
 
-### User-based Collaborative Filtering
+For diagrams, implementation notes, and tradeoffs, see [docs/algorithms.md](docs/algorithms.md).
 
-Builds a pseudo-user vector from the current user's ratings, compares it with sampled users using cosine similarity, and recommends movies that similar users rated highly.
+## ⚠️ Risks
 
-### Item-based Collaborative Filtering
+The app also documents seven recommendation-system risks:
 
-Finds movies similar to the user's highly rated movies using item-item cosine similarity. This creates intuitive reasons like "because you liked The Matrix."
+- Data sparsity
+- Cold start
+- Filter bubble
+- Privacy exposure
+- Interest fixation
+- Popularity bias
+- Low diversity
 
-### Matrix Factorization / SVD
+For explanations and mitigation ideas, see [docs/risks.md](docs/risks.md).
 
-Uses latent movie vectors exported from preprocessing, then builds a user interest vector from the rated movies. This can discover hidden taste dimensions but is less directly explainable.
+## 🌐 GitHub Pages
 
-## Course Deliverable Mapping
+MovieMind can be hosted on GitHub Pages because it builds to static files. The online Pages version uses the committed demo JSON in `public/data/demo/`.
 
-- Recommendation scenario: Hero, Playground, and Pipeline sections
-- Data source: Data Source section and README data instructions
-- User-item rating matrix: Rating Matrix heatmap
-- Similar users/items: Similarity Analysis section
-- Recommendations for at least two users: Case Studies section
-- Recommendation basis: Top-10 cards and case-study explanations
-- Successful and wrong recommendations: Case Studies section
-- Limitations and risks: Limitations & Risks section
+Enable Pages in:
 
-## Open-source Notes
+```text
+Settings -> Pages -> Build and deployment -> Source: GitHub Actions
+```
+
+The workflow at `.github/workflows/deploy.yml` builds the Vite app and deploys `dist/` whenever `main` is pushed.
+
+## ✅ Course Deliverable Mapping
+
+- Recommendation scenario: Hero, Playground, and Pipeline sections.
+- Data source: Data Source section and data instructions.
+- User-item rating matrix: Rating Matrix heatmap.
+- Similar users/items: Similarity Analysis section.
+- Recommendations for at least two users: Case Studies section.
+- Recommendation basis: Top-10 cards and case-study explanations.
+- Successful and wrong recommendations: Case Studies section.
+- Limitations and risks: Limitations & Risks section and [docs/risks.md](docs/risks.md).
+
+## 📦 Open-Source Notes
 
 - Raw MovieLens data is ignored via `.gitignore`.
+- Generated full-data JSON is ignored via `.gitignore`.
 - Demo JSON is compact and intended for educational display.
-- The project is suitable for GitHub Pages, Vercel, Netlify, or any static hosting service after `npm run build`.
+- The project is suitable for GitHub Pages, Vercel, Netlify, or any static hosting provider after `npm run build`.

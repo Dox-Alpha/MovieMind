@@ -34,15 +34,26 @@ function Header() {
           <a className="hover:text-white" href="#similarity">Similarity</a>
           <a className="hover:text-white" href="#risks-detail">Risks</a>
         </div>
-        <a
-          className="flex h-9 items-center gap-2 rounded-lg border border-white/10 px-3 text-xs font-semibold text-slate-300 transition hover:border-cyan/40 hover:text-cyan"
-          href="https://grouplens.org/datasets/movielens/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <Github size={15} />
-          MovieLens
-        </a>
+        <div className="flex items-center gap-2">
+          <a
+            className="hidden h-9 items-center gap-2 rounded-lg border border-white/10 px-3 text-xs font-semibold text-slate-300 transition hover:border-cyan/40 hover:text-cyan sm:flex"
+            href="https://grouplens.org/datasets/movielens/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            MovieLens
+          </a>
+          <a
+            className="flex h-9 items-center gap-2 rounded-lg border border-white/10 px-3 text-xs font-semibold text-slate-300 transition hover:border-cyan/40 hover:text-cyan"
+            href="https://github.com/Dox-Alpha/MovieMind"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Open MovieMind GitHub repository"
+          >
+            <Github size={15} />
+            <span className="hidden sm:inline">GitHub</span>
+          </a>
+        </div>
       </nav>
     </header>
   );

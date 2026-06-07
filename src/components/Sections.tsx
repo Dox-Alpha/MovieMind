@@ -4,6 +4,7 @@ import {
   AlertTriangle,
   BadgeCheck,
   BrainCircuit,
+  ChevronDown,
   Database,
   Eye,
   Fingerprint,
@@ -91,6 +92,47 @@ const risks = [
   { title: "Popularity bias", icon: TrendingUp, copy: "Popular items get more exposure, making long-tail movies harder to discover." },
   { title: "Low diversity", icon: GitBranch, copy: "A high score list can still feel repetitive if genres and moods are too similar." },
 ];
+
+const genreColors = ["#32d9ff", "#8b5cf6", "#fbbf24", "#ff6b6b", "#22c55e", "#a78bfa"];
+
+type TooltipPayload = Array<{
+  name?: string | number;
+  value?: string | number;
+  payload?: {
+    name?: string;
+    value?: number;
+    rating?: string;
+    count?: number;
+    percent?: number;
+  };
+}>;
+
+function DataTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: TooltipPayload;
+  label?: string | number;
+}) {
+  if (!active || !payload?.length) return null;
+  const item = payload[0];
+  const value = Number(item.value ?? item.payload?.count ?? item.payload?.value ?? 0);
+  const percent = item.payload?.percent;
+
+  return (
+    <div className="rounded-lg border border-cyan/20 bg-ink/95 px-3 py-2 text-xs shadow-glow">
+      <div className="font-semibold text-white">
+        {item.payload?.name ?? (label ? `${label} stars` : item.name)}
+      </div>
+      <div className="mt-1 text-slate-400">
+        {value.toLocaleString()} {item.payload?.name ? "movies" : "ratings"}
+        {typeof percent === "number" ? ` / ${percent.toFixed(1)}%` : ""}
+      </div>
+    </div>
+  );
+}
 
 function SectionFrame({
   label,
@@ -263,6 +305,7 @@ function SystemLens() {
 }
 
 export function DataSection({ data }: { data: DemoData }) {
+  const [activeGenreIndex, setActiveGenreIndex] = useState(0);
   const ratingDistribution = useMemo(() => {
     const buckets = [1, 2, 3, 4, 5].map((rating) => ({ rating: `${rating}`, count: 0 }));
     data.ratings.forEach((item) => {
@@ -272,60 +315,134 @@ export function DataSection({ data }: { data: DemoData }) {
     return buckets;
   }, [data.ratings]);
 
+  const averageRating = useMemo(() => {
+    if (!data.ratings.length) return 0;
+    return data.ratings.reduce((sum, rating) => sum + rating.rating, 0) / data.ratings.length;
+  }, [data.ratings]);
+
   const genreDistribution = useMemo(() => {
     const counts = new Map<string, number>();
     data.movies.forEach((movie) => movie.genres.forEach((genre) => counts.set(genre, (counts.get(genre) ?? 0) + 1)));
-    return [...counts.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 6)
-      .map(([name, value]) => ({ name, value }));
+    const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+    const top = sorted.slice(0, 5);
+    const other = sorted.slice(5).reduce((sum, [, value]) => sum + value, 0);
+    const total = top.reduce((sum, [, value]) => sum + value, 0) + other;
+    return [...top, ["Other", other] as [string, number]]
+      .filter(([, value]) => value > 0)
+      .map(([name, value]) => ({ name, value, percent: total ? value / total * 100 : 0 }));
   }, [data.movies]);
+
+  const topGenre = genreDistribution[0];
+  const metricCards = [
+    { label: "Users", value: new Set(data.ratings.map((rating) => rating.userId)).size.toLocaleString() },
+    { label: "Movies", value: data.movies.length.toLocaleString() },
+    { label: "Ratings", value: data.ratings.length.toLocaleString() },
+    { label: "Avg rating", value: averageRating.toFixed(2) },
+  ];
 
   return (
     <SectionFrame id="data" label="Data Source" title="MovieLens ratings become the behavior layer.">
-      <div className="grid gap-5 lg:grid-cols-[360px_1fr]">
-        <div className="rounded-lg border border-line bg-panel/75 p-5">
+      <div className="grid gap-5 xl:grid-cols-[380px_1fr]">
+        <div className="rounded-lg border border-line bg-panel/75 p-5 shadow-glow">
+          <div className="mb-5 flex items-center gap-3">
+            <span className="grid h-10 w-10 place-items-center rounded-lg border border-cyan/25 bg-cyan/10 text-cyan">
+              <Database size={18} />
+            </span>
+            <div>
+              <h3 className="text-base font-semibold text-white">Demo data contract</h3>
+              <p className="text-xs text-slate-500">Static demo JSON online, full MovieLens local.</p>
+            </div>
+          </div>
           <p className="mb-5 text-sm leading-relaxed text-slate-300">
-            This demo uses a compact MovieLens-style sample for instant GitHub playback. The Python script can regenerate these JSON files from MovieLens small after the dataset is downloaded locally.
+            The public site ships with compact demo JSON for instant GitHub Pages playback. Full MovieLens small data can be regenerated locally after downloading the official dataset.
           </p>
+          <div className="mb-5 grid grid-cols-2 gap-3">
+            {metricCards.map((item) => (
+              <div key={item.label} className="rounded-lg border border-white/10 bg-white/[0.035] p-3">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{item.label}</div>
+                <div className="mt-2 text-xl font-bold text-white">{item.value}</div>
+              </div>
+            ))}
+          </div>
           <div className="grid gap-3">
             {[
               ["Dataset", "MovieLens small"],
-              ["Files", "ratings.csv / movies.csv"],
-              ["Demo users", `${new Set(data.ratings.map((rating) => rating.userId)).size}`],
-              ["Demo movies", `${data.movies.length}`],
-              ["Demo ratings", `${data.ratings.length}`],
+              ["Local files", "ratings.csv / movies.csv"],
+              ["Top genre", topGenre ? `${topGenre.name} (${topGenre.percent.toFixed(1)}%)` : "--"],
             ].map(([label, value]) => (
-              <div key={label} className="flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3">
+              <div key={label} className="flex items-center justify-between gap-4 rounded-lg border border-white/10 bg-ink/60 px-4 py-3">
                 <span className="text-xs text-slate-500">{label}</span>
-                <span className="text-sm font-semibold text-white">{value}</span>
+                <span className="text-right text-sm font-semibold text-white">{value}</span>
               </div>
             ))}
           </div>
         </div>
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid gap-5 lg:grid-cols-[1.05fr_0.95fr]">
           <ChartPanel title="Rating distribution">
-            <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={ratingDistribution}>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={ratingDistribution} margin={{ top: 10, right: 12, left: -8, bottom: 0 }}>
                 <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
-                <XAxis dataKey="rating" tick={{ fill: "#94a3b8", fontSize: 12 }} />
-                <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} />
-                <Tooltip contentStyle={{ background: "#0e1422", border: "1px solid rgba(255,255,255,0.12)" }} />
+                <XAxis dataKey="rating" tick={{ fill: "#94a3b8", fontSize: 12 }} tickLine={false} axisLine={{ stroke: "rgba(255,255,255,0.18)" }} />
+                <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} tickLine={false} axisLine={false} />
+                <Tooltip content={<DataTooltip />} cursor={{ fill: "rgba(50,217,255,0.06)" }} />
                 <Bar dataKey="count" fill="#32d9ff" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartPanel>
           <ChartPanel title="Genre distribution">
-            <ResponsiveContainer width="100%" height={260}>
+            <ResponsiveContainer width="100%" height={230}>
               <PieChart>
-                <Pie data={genreDistribution} dataKey="value" nameKey="name" innerRadius={54} outerRadius={88} paddingAngle={3}>
-                  {genreDistribution.map((_, index) => (
-                    <Cell key={index} fill={["#32d9ff", "#8b5cf6", "#fbbf24", "#ff6b6b", "#22c55e", "#a78bfa"][index]} />
+                <Pie
+                  data={genreDistribution}
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius={58}
+                  outerRadius={88}
+                  paddingAngle={2}
+                  stroke="rgba(7,10,18,0.95)"
+                  strokeWidth={3}
+                  onMouseEnter={(_, index) => setActiveGenreIndex(index)}
+                >
+                  {genreDistribution.map((entry, index) => (
+                    <Cell
+                      key={entry.name}
+                      fill={genreColors[index % genreColors.length]}
+                      opacity={index === activeGenreIndex ? 1 : 0.62}
+                    />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ background: "#0e1422", border: "1px solid rgba(255,255,255,0.12)" }} />
+                <text x="50%" y="47%" textAnchor="middle" dominantBaseline="middle" fill="#f8fafc" fontSize="14" fontWeight="800">
+                  {genreDistribution[activeGenreIndex]?.name ?? "Genre"}
+                </text>
+                <text x="50%" y="58%" textAnchor="middle" dominantBaseline="middle" fill="#94a3b8" fontSize="11" fontWeight="700">
+                  {genreDistribution[activeGenreIndex]?.percent.toFixed(1) ?? "0.0"}%
+                </text>
+                <Tooltip content={<DataTooltip />} />
               </PieChart>
             </ResponsiveContainer>
+            <div className="mt-2 grid gap-2">
+              {genreDistribution.map((entry, index) => (
+                <button
+                  key={entry.name}
+                  type="button"
+                  onMouseEnter={() => setActiveGenreIndex(index)}
+                  className={`flex items-center justify-between rounded-md border px-3 py-2 text-left text-xs transition ${
+                    index === activeGenreIndex
+                      ? "border-cyan/35 bg-cyan/10 text-white"
+                      : "border-white/10 bg-white/[0.03] text-slate-400"
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <span
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: genreColors[index % genreColors.length] }}
+                    />
+                    {entry.name}
+                  </span>
+                  <span className="font-semibold text-slate-200">{entry.percent.toFixed(1)}%</span>
+                </button>
+              ))}
+            </div>
           </ChartPanel>
         </div>
       </div>
@@ -405,17 +522,23 @@ export function SimilaritySection({ data }: { data: DemoData }) {
         <div className="rounded-lg border border-line bg-panel/75 p-5">
           <div className="mb-4 grid gap-3">
             <h3 className="text-sm font-semibold text-white">Movie similarity Top-5</h3>
-            <select
-              value={selectedMovieId}
-              onChange={(event) => setSelectedMovieId(Number(event.target.value))}
-              className="h-11 w-full min-w-0 rounded-lg border border-white/10 bg-ink px-3 text-sm font-semibold text-slate-200 outline-none transition focus:border-cyan/50"
-            >
-              {data.itemSimilarity.map((entry) => (
-                <option key={entry.sourceMovieId} value={entry.sourceMovieId}>
-                  {movieMap.get(entry.sourceMovieId)?.title ?? entry.sourceMovieId}
-                </option>
-              ))}
-            </select>
+            <div className="relative max-w-md">
+              <select
+                value={selectedMovieId}
+                onChange={(event) => setSelectedMovieId(Number(event.target.value))}
+                className="h-11 w-full min-w-0 appearance-none rounded-lg border border-white/10 bg-ink px-3 pr-10 text-sm font-semibold text-slate-200 outline-none transition focus:border-cyan/50"
+              >
+                {data.itemSimilarity.map((entry) => (
+                  <option key={entry.sourceMovieId} value={entry.sourceMovieId}>
+                    {movieMap.get(entry.sourceMovieId)?.title ?? entry.sourceMovieId}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                size={16}
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+            </div>
           </div>
           <div className="space-y-3">
             {selected?.similar.map((entry, index) => {

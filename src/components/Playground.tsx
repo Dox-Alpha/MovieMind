@@ -100,12 +100,14 @@ export function Playground({ data }: { data: DemoData }) {
   return (
     <section id="playground" className="section-pad">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-8 flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-          <div>
+        <div className="mb-8 grid gap-4 xl:grid-cols-[1fr_auto] xl:items-end">
+          <div className="min-w-0">
             <p className="section-label">Recommendation Playground</p>
-            <h2 className="section-title">Rate a few movies, then watch the system infer taste.</h2>
+            <h2 className="section-title">
+              Rate a few movies, then watch the system infer taste.
+            </h2>
           </div>
-          <div className="rounded-lg border border-cyan/20 bg-cyan/5 px-4 py-3 text-sm text-cyan">
+          <div className="w-fit rounded-lg border border-cyan/20 bg-cyan/5 px-4 py-3 text-sm text-cyan xl:justify-self-end">
             {preferences.length < 2 ? "Low confidence: add at least 2 ratings." : `${preferences.length} preference signals active`}
           </div>
         </div>
